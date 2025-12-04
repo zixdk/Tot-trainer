@@ -3,184 +3,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ToT Raid Trainer</title>
+    <title>Throne of Thunder Raid Notes</title>
     <style>
         :root {
-            --bg-dark: #121212;
-            --bg-panel: #1e1e1e;
-            --accent: #d4af37; /* Gold/Throne of Thunder vibe */
-            --danger: #ff4444;
-            --success: #00C851;
-            --warning: #ffbb33;
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
             --text-main: #e0e0e0;
             --text-muted: #a0a0a0;
+            --accent-red: #ff3c3c;
+            --accent-blue: #4da6ff;
+            --border-color: #333;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-dark);
+            background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
-            padding: 0;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 250px;
-            background-color: #181818;
-            border-right: 1px solid #333;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-        }
-
-        .sidebar-header {
             padding: 20px;
-            background: #000;
-            color: var(--accent);
-            text-align: center;
-            font-weight: bold;
-            font-size: 1.2rem;
-            border-bottom: 2px solid var(--accent);
+            line-height: 1.6;
         }
 
-        .boss-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
         }
 
-        .boss-item {
-            padding: 15px 20px;
-            cursor: pointer;
-            border-bottom: 1px solid #2a2a2a;
-            transition: background 0.2s;
-        }
-
-        .boss-item:hover {
-            background-color: #2a2a2a;
-        }
-
-        .boss-item.active {
-            background-color: var(--accent);
-            color: #000;
-            font-weight: bold;
-        }
-
-        /* Main Content */
-        .main {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            position: relative;
-        }
-
-        .mode-switch {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .btn {
-            background: var(--bg-panel);
-            color: var(--text-main);
-            border: 1px solid #444;
-            padding: 10px 20px;
-            cursor: pointer;
-            border-radius: 4px;
-            font-weight: bold;
-        }
-
-        .btn.active {
-            background: var(--accent);
-            color: #000;
-            border-color: var(--accent);
-        }
-
-        /* Content Sections */
-        .boss-header {
-            margin-bottom: 20px;
-            border-bottom: 1px solid #444;
+        h1 {
+            color: var(--accent-red);
+            border-bottom: 2px solid var(--border-color);
             padding-bottom: 10px;
-        }
-
-        .boss-header h1 {
-            margin: 0;
-            color: var(--accent);
-        }
-
-        .section-card {
-            background: var(--bg-panel);
-            margin-bottom: 15px;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid var(--accent);
-        }
-
-        .section-card h3 {
-            margin-top: 0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .danger-card { border-left-color: var(--danger); }
-        .danger-card h3 { color: var(--danger); }
-
-        .success-card { border-left-color: var(--success); }
-        .success-card h3 { color: var(--success); }
-
-        .leader-card { border-left-color: var(--warning); border: 1px solid var(--warning); background: #2a2a1a; }
-        .leader-card h3 { color: var(--warning); }
-
-        ul { padding-left: 20px; }
-        li { margin-bottom: 5px; }
-
-        /* Quiz Mode Styles */
-        .quiz-card {
-            background: var(--bg-panel);
+            font-size: 1.8rem;
+            margin-top: 40px;
             margin-bottom: 20px;
-            padding: 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            border: 1px solid #444;
-            transition: all 0.2s;
-            text-align: center;
-            min-height: 100px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .mechanic-card {
+            background-color: var(--card-bg);
+            border-left: 4px solid var(--accent-red);
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            border-radius: 0 5px 5px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .mechanic-title {
+            font-weight: bold;
+            color: var(--accent-blue);
+            font-size: 1.1rem;
+            margin-bottom: 5px;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
             align-items: center;
         }
 
-        .quiz-card:hover {
-            background: #252525;
-            transform: translateY(-2px);
-        }
-
-        .quiz-question {
-            font-size: 1.1rem;
+        .mechanic-title::before {
+            content: "!";
+            display: inline-block;
+            background: var(--accent-red);
+            color: white;
+            width: 20px;
+            height: 20px;
+            text-align: center;
+            line-height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+            font-size: 14px;
             font-weight: bold;
-            color: var(--accent);
-            margin-bottom: 10px;
         }
 
-        .quiz-answer {
-            display: none;
+        .mechanic-content {
             color: var(--text-main);
-            margin-top: 10px;
-            text-align: left;
-            width: 100%;
         }
 
-        .quiz-card.revealed .quiz-answer {
+        .highlight {
+            color: var(--accent-red);
+            font-weight: bold;
+        }
+
+        .sub-note {
             display: block;
-            animation: fadeIn 0.3s;
+            font-size: 0.9em;
+            color: var(--text-muted);
+            margin-top: 5px;
+            font-style: italic;
         }
 
-        .quiz-hint {
-            font-size: 0.8
-          
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            h1 { font-size: 1.5rem; }
+            .mechanic-card { padding: 10px 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <h1>Jin'rokh Important Mechanics</h1>
+
+    <div class="mechanic-card">
+        <div class="mechanic-title">Lightning Bolt (Focused Lightning)</div>
+        <div class="mechanic-content">
+            Move OUT of the Pool and Explode at the <span class="highlight">Corner!!!</span>
+        </div>
+    </div>
+
+    <div class="mechanic-card">
+        <div class="mechanic-title">Ionization</div>
+        <div class="mechanic-content">
+            Use all your Immunities (Ice Block, Shadow Cloak, Deterrence, Bubble).
+            <span class="sub-note">
+                <strong>Symbiosis Assignments:</strong> R-Druid Symbiosis Mage (for Ice Block) / Boomkin Symbiosis Rogue (for Cloak of Shadows) for Extra Immunities!!!
+            </span>
+            <span class="sub-note">
+                If you don't have Immunity: Move OUT of pool and Dispel yourself. Remember to use Def CDs before Dispel!
+            </span>
+        </div>
+    </div>
+
+    <div class="mechanic-card" style="border-left-color: #ff0000;">
+        <div class="mechanic-title" style="color: #ff0000;">IMPORTANT</div>
+        <div class="mechanic-content">
+            Never Explode Bolt IN POOL!!!! Never Explode/Dispel Ionization IN the pool!!!!
+        </div>
+    </div>
+
+
+    <h1>Horridon Important Mechanics</h1>
+
+    <div class="mechanic-card">
+        <div class="mechanic-title">Door 1 (Farraki)</div>
+        <div class="mechanic-content">
+            Dodge Sand Traps (Never stand in). Healers ALWAYS Dispel Blazing Debuff!!!
+        </div>
+    </div>
+
+    <div class="mechanic-card">
+        <div class="mechanic-title">Door 2 (Gurubashi)</div>
+        <div class="mechanic-content">
+            Focus Venom Mobs + Interrupt Casts (Prio always Green Mobs!!!). Dodge Venom pools (Color Green).
+            <span class="sub-note">Healers: If we have cast Debuff, 24/7 Dispel Venom poisons!!!!</span>
+        </div>
+    </div>
+
+    <div class="mechanic-card">
+        <div class="mechanic-title">Door 3 (Drakkari)</div>
+        <div class="mechanic-content">
+            RDPS + Healer Team: Group up at Specified Position. MDPS Always with Tank!!!
+            <br>
+            Kill 3 BIG Mobs and Dodge Frost Orbs (they Hit like a Truck).
+            <span class="sub-note">Important: Healers 24/7 Keep Dispelling!!!!</span>
+        </div>
+    </div>
+
+    <div class="mechanic-card">
+        <div class="mechanic-title">Door 4 (Amani)</div>
+        <div class="mechanic-content">
+            Kill 3 Bear + Kill 3 Big Shaman. MDPS Never Stand in Front of Bears (They HIT Frontals and you GET One shot!!!).
+            <br>
+            RDPS + Healers GROUP UP at Specific Position!!!! Dodge Totems on the Ground.
+        </div>
+    </div>
+
+    <div class="mechanic-card">
+        <div class="mechanic-title">Main Mechanic 1: Charge</div>
+        <div class="mechanic-content">
+            If you have Charge <span class="highlight">MOVE away from Team!!!</span>
+            <span class="sub-note">Never IGNORE Charge. Ignore Charge = 3-4 PLAYERS Dead + Ban Loot!!!</span>
+        </div>
+    </div>
+
+    <div class="mechanic-card">
+        <div class="mechanic-title">Main Mechanic 2: Dire Fixation</div>
+        <div class="mechanic-content">
+            When Boss Active, sometimes Players GET Debuff Called: <span class="highlight">Dire FIXATION</span>.
+            <br>
+            That IS a Dino which only you can see. Sometimes you need to HIT HIM. If you don't hit him he will reach you and kill you!!!!
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
