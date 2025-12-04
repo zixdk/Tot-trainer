@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Throne of Thunder Raid Trainer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg: #050814;
+      --bg-card: #101426;
+      --bg-card-alt: #151a30;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.15);
+      --danger: #f97373;
+      --success: #4ade80;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --border: #1f2937;
+      --wrong: #f97373;
+      --correct: #4ade80;
+      --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.6);
+      --radius-lg: 18px;
+      --radius-pill: 999px;
+      --transition-fast: 0.15s ease-out;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: radial-gradient(circle at top, #0b1220, #020617 60%);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 960px;
+      background: linear-gradient(145deg, #020617, #020617 55%, #0b1120);
+      border-radius: 24px;
+      border: 1px solid #111827;
+      box-shadow: var(--shadow-soft);
+      padding: 20px 20px 24px;
+    }
+
+    @media (min-width: 768px) {
+      .app {
+        padding: 28px 30px 32px;
+      }
+    }
+
+    .app-header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .title {
+      font-size: clamp(1.4rem, 2vw, 1.7rem);
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .title-pill {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: rgba(56,189,248,0.09);
+      border-radius: var(--radius-pill);
+      padding: 3px 10px;
+      border: 1px solid rgba(56,189,248,0.4);
+    }
+
+    .subtitle {
+      font-size: 0.86rem;
+      color: var(--muted);
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      font-size: 0.74rem;
+    }
+
+    .badge {
+      border-radius: var(--radius-pill);
+      padding: 4px 10px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(31, 41, 55, 0.9);
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.9);
+    }
+
+    .screen {
+      margin-top: 10px;
+    }
+
+    .screen-card {
+      background: radial-gradient(circle at top left, #0b1120, #020617);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      padding: 18px 18px 16px;
+      box-shadow: 0 14px 35px rgba(0, 0, 0, 0.7);
+    }
+
+    @media (min-width: 768px) {
+      .screen-card {
+        padding: 22px 22px 18px;
+      }
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .column {
+      flex: 1 1 220px;
+    }
+
+    .label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    select,
+    button {
+      font-family: inherit;
+    }
+
+    .select {
+      width: 100%;
+      background: #020617;
+      border-radius: 999px;
+      border: 1px solid rgba(55,65,81,0.9);
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      color: var(--text);
+      outline: none;
+    }
+
+    .select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(56,189,248,0.5);
+    }
+
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 0.8rem;
+    }
+
+    .stat {
+      padding: 7px 10px;
+      border-radius: var(--radius-pill);
+      background: rgba(15,23,42,0.85);
+      border: 1px solid rgba(31,41,55,0.9);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stat-label {
+      color: var(--muted);
+    }
+
+    .stat-value {
+      font-weight: 600;
+    }
+
+    .start-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .btn {
+      border-radius: var(--radius-pill);
+      border: 1px solid transparent;
+      padding: 9px 16px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: #111827;
+      color: var(--text);
+      transition: transform var(--transition-fast),
+        box-shadow var(--transition-fast),
+        background var(--transition-fast),
+        border var(--transition-fast),
+        opacity var(--transition-fast);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0ea5e9, #22c55e);
+      border-color: rgba(15, 23, 42, 0.8);
+      color: #f9fafb;
+      box-shadow: 0 12px 30px rgba(34,197,94,0.45);
+    }
+
+    .btn-secondary {
+      background: rgba(15,23,42,0.95);
+      border-color: rgba(55,65,81,1);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border-color: rgba(55,65,81,0.7);
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.9);
+      filter: brightness(1.03);
+    }
+
+    .btn:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.8);
+      filter: brightness(0.98);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: default;
+      box-shadow: none;
+      transform: none;
+    }
+
+    /* Question View */
+
+    .question-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .boss-tag {
+      padding: 6px 11px;
+      border-radius: var(--radius-pill);
+      background: var(--accent-soft);
+      border: 1px solid rgba(56,189,248,0.7);
+      font-size: 0.74rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .boss-tag span {
+      opacity: 0.9;
+    }
+
+    .difficulty-pill {
+      padding: 4px 9px;
+      border-radius: var(--radius-pill);
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(55,65,81,0.9);
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .question-counter {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .question-text {
+      font-size: 1rem;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .answers {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .answer-btn {
+      width: 100%;
+      text-align: left;
+      padding: 9px 11px;
+      border-radius: 12px;
+      border: 1px solid rgba(31,41,55,0.95);
+      background: rgba(15,23,42,0.95);
+      font-size: 0.9rem;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      cursor: pointer;
+      transition: background var(--transition-fast),
+        transform var(--transition-fast),
+        border var(--transition-fast),
+        box-shadow var(--transition-fast),
+        color var(--transition-fast);
+    }
+
+    .answer-letter {
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      border: 1px solid rgba(55,65,81,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.78rem;
+      color: var(--muted);
+      background: rgba(15,23,42,0.9);
+      flex-shrink: 0;
+    }
+
+    .answer-text {
+      flex: 1;
+    }
+
+    .answer-btn:hover:not(.answer-disabled) {
+      transform: translateY(-1px);
+      border-color: rgba(56,189,248,0.8);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.85);
+    }
+
+    .answer-btn.correct {
+      border-color: var(--correct);
+      background: rgba(22,163,74,0.12);
+      box-shadow: 0 0 0 1px rgba(74,222,128,0.3);
+    }
+
+    .answer-btn.wrong {
+      border-color: var(--wrong);
+      background: rgba(248,113,113,0.08);
+      box-shadow: 0 0 0 1px rgba(248,113,113,0.28);
+    }
+
+    .answer-btn.answer-disabled {
+      cursor: default;
+      opacity: 0.9;
+    }
+
+    .answer-btn.correct .answer-letter {
+      border-color: var(--correct);
+      color: var(--correct);
+    }
+
+    .answer-btn.wrong .answer-letter {
+      border-color: var(--wrong);
+      color: var(--wrong);
+    }
+
+    .explanation {
+      font-size: 0.86rem;
+      border-radius: 12px;
+      padding: 8px 10px;
+      background: rgba(15,23,42,0.96);
+      border: 1px solid rgba(31,41,55,1);
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .explanation strong {
+      color: var(--accent);
+    }
+
+    .footer-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .small-note {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .score-highlight {
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    /* Result screen */
+
+    .result-main {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .result-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .result-score {
+      font-size: 0.96rem;
+    }
+
+    .result-bar-wrap {
+      width: 100%;
+      background: rgba(15,23,42,0.95);
+      border-radius: 999px;
+      border: 1px solid rgba(31,41,55,1);
+      padding: 3px;
+      margin-top: 3px;
+    }
+
+    .result-bar {
+      height: 14px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #f97316, #22c55e);
+      transition: width 0.3s ease-out;
+    }
+
+    .result-comment {
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header class="app-header">
+    <div class="title-block">
+      <div class="title">
+        Throne of Thunder Trainer
+        <span class="title-pill">MoP Classic &nbsp;•&nbsp; Raid Test</span>
+      </div>
+      <div class="subtitle">
+        Real mechanic quiz for <strong>retail-level brain</strong> in a Classic body.
+        Pass the test, then pull the boss.
+      </div>
+      <div class="badge-row">
+        <span class="badge">
+          <span class="badge-dot"></span>
+          Live raid prep
+        </span>
+        <span class="badge">
+          🧠 Mechanics only
+        </span>
+        <span class="badge">
+          ✅ No addons required
+        </span>
+      </div>
+    </div>
+    <div class="stats" id="headerStats">
+      <div class="stat">
+        <span class="stat-label">Correct:</span>
+        <span class="stat-value" id="headerCorrect">0</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Total:</span>
+        <span class="stat-value" id="headerTotal">0</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Boss:</span>
+        <span class="stat-value" id="headerBoss">—</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="screen">
+    <!-- START SCREEN -->
+    <section id="startScreen" class="screen-card">
+      <div class="row">
+        <div class="column">
+          <div class="label">Mode</div>
+          <p class="subtitle" style="margin-top:0;">
+            Choose a boss to practice, or run a full <strong>Throne of Thunder exam</strong>.
+          </p>
+          <div class="label" style="margin-top:10px;">Boss / Pool</div>
+          <select id="bossSelect" class="select">
+            <option value="ALL">Full Raid Test (All Bosses)</option>
+            <option value="Jin'rokh the Breaker">Jin'rokh the Breaker</option>
+            <option value="Horridon">Horridon</option>
+            <option value="Council of Elders">Council of Elders</option>
+            <option value="Tortos">Tortos</option>
+            <option value="Megaera">Megaera</option>
+            <option value="Ji-Kun">Ji-Kun</option>
+            <option value="Durumu the Forgotten">Durumu the Forgotten</option>
+            <option value="Primordius">Primordius</option>
+            <option value="Dark Animus">Dark Animus</option>
+            <option value="Iron Qon">Iron Qon</option>
+            <option value="Twin Consorts">Twin Consorts</option>
+            <option value="Lei Shen">Lei Shen</option>
+            <option value="Ra-den">Ra-den</option>
+          </select>
+          <div class="start-buttons">
+            <button id="startBtn" class="btn btn-primary">
+              ▶ Start Test
+            </button>
+            <button id="practiceBtn" class="btn btn-secondary">
+              🎯 Practice Selected Boss
+            </button>
+          </div>
+        </div>
+        <div class="column">
+          <div class="label">How it works</div>
+          <ul class="subtitle" style="padding-left:18px; margin-top:0;">
+            <li>Multiple-choice questions per boss</li>
+            <li>Instant feedback &amp; mechanic reminder</li>
+            <li>Score summary at the end</li>
+            <li>Perfect for Discord screen share training</li>
+          </ul>
+          <p class="small-note">
+            Tip: Use <strong>Full Raid Test</strong> before progression night; if someone fails a boss, lock them to that boss in Practice mode.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUESTION SCREEN -->
+    <section id="questionScreen" class="screen-card hidden">
+      <div class="question-meta">
+        <div class="boss-tag">
+          <span id="bossNameTag">Boss</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span class="difficulty-pill" id="modeTag">Exam</span>
+          <span class="question-counter" id="questionCounter">Q 1 / 1</span>
+        </div>
+      </div>
+      <div class="question-text" id="questionText">
+        Question text
+      </div>
+      <div class="answers" id="answersContainer">
+        <!-- Answer buttons here -->
+      </div>
+      <div id="explanationBox" class="explanation hidden"></div>
+      <div class="footer-row">
+        <span class="small-note">
+          <span class="score-highlight" id="inlineScore">0 / 0</span> correct so far.
+        </span>
+        <div style="display:flex; gap:8px;">
+          <button id="nextBtn" class="btn btn-primary" disabled>
+            Next Question
+          </button>
+          <button id="quitBtn" class="btn btn-ghost">
+            ⏹ End Test
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESULT SCREEN -->
+    <section id="resultScreen" class="screen-card hidden">
+      <div class="result-main">
+        <div class="result-title" id="resultTitle">Result</div>
+        <div class="result-score">
+          Score: <span id="resultScore">0 / 0</span>
+          (<span id="resultPercent">0%</span>)
+        </div>
+        <div class="result-bar-wrap">
+          <div id="resultBar" class="result-bar" style="width: 0%;"></div>
+        </div>
+        <div class="result-comment" id="resultComment">
+          Comment here.
+        </div>
+      </div>
+      <div class="footer-row" style="margin-top:8px;">
+        <span class="small-note">
+          Tip: If you’re below 80%, redo the bosses you failed in Practice mode.
+        </span>
+        <div style="display:flex; gap:8px;">
+          <button id="retrySameBtn" class="btn btn-secondary">
+            🔁 Retry Same Pool
+          </button>
+          <button id="backHomeBtn" class="btn btn-primary">
+            🏠 Back to Menu
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  // -----------------------------
+  // DATA: QUESTIONS
+  // -----------------------------
+  const QUESTIONS = [
+    // Jin'rokh the Breaker
+    {
+      boss: "Jin'rokh the Breaker",
+      text: "During Lightning Storm, where should you be standing?",
+      options: [
+        "Inside the Conductive Water puddle for max DPS",
+        "Anywhere, as long as healers are ready",
+        "Out of all water puddles, on solid ground",
+        "Stacked tightly in the middle of the room"
+      ],
+      correctIndex: 2,
+      explanation:
+        "Lightning Storm electrifies the water. If you are standing in a Conductive Water puddle during the cast, you get one-shot. Move OUT of water before the cast finishes."
+    },
+    {
+      boss: "Jin'rokh the Breaker",
+      text: "Focused Lightning (the electrical orb) is fixated on you. What do you do?",
+      options: [
+        "Kite it through the raid for extra damage",
+        "Drag it into the active puddle to clear it",
+        "Run it to the edge of the room, away from puddles and raid",
+        "Ignore it and let healers deal with it"
+      ],
+      correctIndex: 2,
+      explanation:
+        "The orb detonates when it reaches you. If it hits a puddle, it explodes the whole pool. You run to the wall, away from puddles and the raid."
+    },
+
+    // Horridon
+    {
+      boss: "Horridon",
+      text: "What is the MAIN DPS priority during the door phases?",
+      options: [
+        "Tunnel Horridon for boss damage",
+        "Split DPS 50/50 between adds and boss",
+        "Ignore most adds and only kill Dinomancer",
+        "Kill the adds at the active door; ignore boss"
+      ],
+      correctIndex: 3,
+      explanation:
+        "For Horridon, boss damage is largely irrelevant until all four doors are cleared. You kill adds at the active door and handle mechanics."
+    },
+    {
+      boss: "Horridon",
+      text: "A Dinomancer starts casting Dino-Mending. What MUST happen?",
+      options: [
+        "Nothing, it’s just light healing",
+        "Healers dispel it",
+        "Interrupt or stun the cast immediately",
+        "Kite Horridon away"
+      ],
+      correctIndex: 2,
+      explanation:
+        "If Dino-Mending goes off, Horridon heals to full. Dinomancers must be focused and their heal interrupted or stunned every time."
+    },
+
+    // Council of Elders
+    {
+      boss: "Council of Elders",
+      text: "A troll becomes big and dark (Possessed). What should DPS do?",
+      options: [
+        "Maintain damage on their original target",
+        "Swap and burn the Possessed troll’s shield",
+        "Stop DPS entirely",
+        "Spread and only cleave"
+      ],
+      correctIndex: 1,
+      explanation:
+        "When a troll is Possessed, that one must be focused to break the possession shield. Tunnel on the big/dark troll until the effect breaks."
+    },
+    {
+      boss: "Council of Elders",
+      text: "Kazra'jin is possessed and reflecting damage. You are low HP. What is the correct play?",
+      options: [
+        "Keep hard nuking and hope for healing",
+        "Swap to another target immediately",
+        "Stop or slow DPS until you’re safe to hit again",
+        "Use multi-dot/AoE to spread reflect damage"
+      ],
+      correctIndex: 2,
+      explanation:
+        "Kazra'jin reflects damage while possessed. You must be careful: if you’re low HP, stop or slow DPS or you’ll kill yourself."
+    },
+
+    // Tortos
+    {
+      boss: "Tortos",
+      text: "Tortos starts casting Furious Stone Breath. How do you prevent a wipe?",
+      options: [
+        "Healers use cooldowns to heal through it",
+        "Everyone hides behind rocks",
+        "A player kicks a spinning turtle into the boss",
+        "Tanks turn the boss away from the raid"
+      ],
+      correctIndex: 2,
+      explanation:
+        "Furious Stone Breath must be interrupted by kicking a Whirl Turtle into Tortos using the Extra Action Button. Missing the kick = raid wipe."
+    },
+    {
+      boss: "Tortos",
+      text: "Where should Whirl Turtles ideally die?",
