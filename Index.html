@@ -1,193 +1,186 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>ToT Raid Trainer</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-body{margin:0;font-family:Arial;background:#0b1020;color:white;text-align:center}
-.container{max-width:700px;margin:auto;padding:20px}
-button,select{width:100%;padding:14px;margin:10px 0;font-size:17px;border-radius:8px;border:0;background:#243b75;color:white}
-button:hover{background:#3457a0}
-.correct{background:#1f7a3f!important}
-.wrong{background:#7a1f1f!important}
-.hidden{display:none}
-h1{color:#00c8ff}
-.small{font-size:13px;color:#aaa}
-</style>
-</head>
-<body>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToT Raid Trainer</title>
+    <style>
+        :root {
+            --bg-dark: #121212;
+            --bg-panel: #1e1e1e;
+            --accent: #d4af37; /* Gold/Throne of Thunder vibe */
+            --danger: #ff4444;
+            --success: #00C851;
+            --warning: #ffbb33;
+            --text-main: #e0e0e0;
+            --text-muted: #a0a0a0;
+        }
 
-<div class="container">
-<h1>THRONE OF THUNDER TRAINER</h1>
-<p class="small">Raid brains only.</p>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
 
-<div id="menu">
-<select id="bossSelect">
-<option value="ALL">FULL RAID (ALL BOSSES)</option>
-<option>Jin'rokh</option><option>Horridon</option><option>Council</option>
-<option>Tortos</option><option>Megaera</option><option>Ji-Kun</option>
-<option>Durumu</option><option>Primordius</option><option>Dark Animus</option>
-<option>Iron Qon</option><option>Twin Consorts</option><option>Lei Shen</option>
-<option>Ra-den</option>
-</select>
-<button onclick="startGame()">START</button>
-</div>
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: #181818;
+            border-right: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
 
-<div id="quiz" class="hidden">
-<h2 id="boss"></h2>
-<h3 id="question"></h3>
-<div id="answers"></div>
-</div>
+        .sidebar-header {
+            padding: 20px;
+            background: #000;
+            color: var(--accent);
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            border-bottom: 2px solid var(--accent);
+        }
 
-<div id="result" class="hidden">
-<h2 id="score"></h2>
-<button onclick="location.reload()">RETRY</button>
-</div>
-</div>
+        .boss-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
 
-<script>
-const RAW = [
-// JIN
-["Jin'rokh","When leave puddle?","When storm starts","Never","Instant","Low HP only"],
-["Jin'rokh","Focused Lightning goes…","To wall","Into raid","To puddle","Tank"],
-["Jin'rokh","Orb hits puddle…","Explodes","Buff","Heal","Nothing"],
+        .boss-item {
+            padding: 15px 20px;
+            cursor: pointer;
+            border-bottom: 1px solid #2a2a2a;
+            transition: background 0.2s;
+        }
 
-// HORRIDON
-["Horridon","Main target?","Adds","Boss","Tail","Random"],
-["Horridon","Dino-Mending?","Interrupt","Run","Heal","Ignore"],
-["Horridon","Safe position?","Side","Tail","Head","Middle"],
+        .boss-item:hover {
+            background-color: #2a2a2a;
+        }
 
-// COUNCIL
-["Council","Possessed looks…","Big & dark","Blue","Red","Small"],
-["Council","Kazra'jin reflect?","Stop if low","Nuke","Stack","Ignore"],
-["Council","Frostbite means…","Move away","Stack","AFK","Jump"],
+        .boss-item.active {
+            background-color: var(--accent);
+            color: #000;
+            font-weight: bold;
+        }
 
-// TORTOS
-["Tortos","Stop breath?","Kick turtle","Heal","Run","Taunt"],
-["Tortos","Rockfall safety?","No blue","Blue","Under","Anywhere"],
-["Tortos","Kill turtles where?","Near boss","Far","Behind","Random"],
+        /* Main Content */
+        .main {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            position: relative;
+        }
 
-// MEGAERA
-["Megaera","Cinders rule?","Run then dispel","Dispel fast","Ignore","Stack"],
-["Megaera","Rampage =","Stack","Spread","AFK","Run"],
-["Megaera","Kill target?","Skull","Closest","Random","Green"],
+        .mode-switch {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
 
-// JI-KUN
-["Ji-Kun","Down Draft?","Run to boss","Run away","Jump","AFK"],
-["Ji-Kun","Nest job?","Kill eggs","AFK","Boss DPS","Heal"],
-["Ji-Kun","Green goo?","Avoid","Stack","Stand","Ignore"],
+        .btn {
+            background: var(--bg-panel);
+            color: var(--text-main);
+            border: 1px solid #444;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+        }
 
-// DURUMU
-["Durumu","Maze killer?","Fog","Adds","Laser","Boss"],
-["Durumu","Red beam?","Reveal fogs","AFK","Buff","Heal"],
-["Durumu","Maze path?","Safe gap","Middle","Spin","Jump"],
+        .btn.active {
+            background: var(--accent);
+            color: #000;
+            border-color: var(--accent);
+        }
 
-// PRIMORDIUS
-["Primordius","Best stacks?","5","3","10","2"],
-["Primordius","6+ stacks?","Bad slime","Buff","Nothing","Heal"],
-["Primordius","Priority?","Blobs first","Boss","Tank","Adds"],
+        /* Content Sections */
+        .boss-header {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+        }
 
-// DARK ANIMUS
-["Dark Animus","Main rule?","Single target","AOE","Ignore","Pull boss"],
-["Dark Animus","Too many deaths?","Anima chaos","Heal","Nothing","Buff"],
-["Dark Animus","Boss at 100?","Wipe","Fun","Boost","Sleep"],
+        .boss-header h1 {
+            margin: 0;
+            color: var(--accent);
+        }
 
-// IRON QON
-["Iron Qon","Fire phase?","Spread","Stack","Hide","Jump"],
-["Iron Qon","Ice casters?","Stop casting","Nuke","Blink","Run"],
-["Iron Qon","Wind phase?","Stack safe","Spread","Ignore","AFK"],
+        .section-card {
+            background: var(--bg-panel);
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent);
+        }
 
-// TWINS
-["Twin Consorts","Inferno safety?","Comet","Stack","Heal","Jump"],
-["Twin Consorts","Destroy comet?","No","Yes","Later","Ignore"],
-["Twin Consorts","Dark danger?","Sleep clouds","Fire","Ice","Wind"],
+        .section-card h3 {
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-// LEI SHEN
-["Lei Shen","Transition?","Corners","Boss","Middle","Jump"],
-["Lei Shen","Static Shock?","Stack","Run","Jump","Ignore"],
-["Lei Shen","Helm push?","Run against","Let go","Jump","Heal"],
+        .danger-card { border-left-color: var(--danger); }
+        .danger-card h3 { color: var(--danger); }
 
-// RADEN
-["Ra-den","Vita rule?","Rotation","Random","Ignore","Stack"],
-["Ra-den","Red orb?","Kill","Tank","Ignore","Buff"],
-["Ra-den","Wrong jump?","Wipe","Buff","Heal","Nothing"]
-];
+        .success-card { border-left-color: var(--success); }
+        .success-card h3 { color: var(--success); }
 
-let ALL = [];
-RAW.forEach(q=>{
-let opts = q.slice(2);
-let correct = q[2];
-shuffle(opts);
-ALL.push({b:q[0],q:q[1],a:opts,c:opts.indexOf(correct)});
-});
+        .leader-card { border-left-color: var(--warning); border: 1px solid var(--warning); background: #2a2a1a; }
+        .leader-card h3 { color: var(--warning); }
 
-let test=[],i=0,score=0;
+        ul { padding-left: 20px; }
+        li { margin-bottom: 5px; }
 
-function startGame(){
-let sel=document.getElementById("bossSelect").value;
-test = sel==="ALL"? [...ALL]: ALL.filter(q=>q.b==sel);
-shuffle(test);
-test = limitBossRepeats(test);
-i=0;score=0;
-document.getElementById("menu").classList.add("hidden");
-document.getElementById("quiz").classList.remove("hidden");
-load();
-}
+        /* Quiz Mode Styles */
+        .quiz-card {
+            background: var(--bg-panel);
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 1px solid #444;
+            transition: all 0.2s;
+            text-align: center;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
 
-function load(){
-let q=test[i];
-document.getElementById("boss").innerText="🛑 "+q.b;
-document.getElementById("question").innerText=q.q;
-let box=document.getElementById("answers");
-box.innerHTML="";
-q.a.forEach((x,n)=>{
-let b=document.createElement("button");
-b.innerText=x;
-b.onclick=()=>pick(n,b);
-box.appendChild(b);
-});
-}
+        .quiz-card:hover {
+            background: #252525;
+            transform: translateY(-2px);
+        }
 
-function pick(n,b){
-let q=test[i];
-let btns=document.querySelectorAll("#answers button");
-btns.forEach(x=>x.disabled=true);
-if(n===q.c){b.classList.add("correct");score++}
-else{b.classList.add("wrong");btns[q.c].classList.add("correct")}
-setTimeout(next,700);
-}
+        .quiz-question {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
 
-function next(){
-i++;
-if(i>=test.length){
-document.getElementById("quiz").classList.add("hidden");
-document.getElementById("result").classList.remove("hidden");
-document.getElementById("score").innerText="Score: "+score+" / "+test.length;
-}else load();
-}
+        .quiz-answer {
+            display: none;
+            color: var(--text-main);
+            margin-top: 10px;
+            text-align: left;
+            width: 100%;
+        }
 
-function shuffle(a){
-for(let i=a.length-1;i>0;i--){
-let j=Math.floor(Math.random()*(i+1));
-[a[i],a[j]]=[a[j],a[i]];
-}
-}
+        .quiz-card.revealed .quiz-answer {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
 
-function limitBossRepeats(arr){
-for(let i=2;i<arr.length;i++){
-if(arr[i].b===arr[i-1].b && arr[i].b===arr[i-2].b){
-for(let j=i+1;j<arr.length;j++){
-if(arr[j].b!==arr[i].b){
-[arr[i],arr[j]]=[arr[j],arr[i]];
-break;
-}
-}
-}
-}
-return arr;
-}
-</script>
-
-</body>
-</html>
+        .quiz-hint {
+            font-size: 0.8
+          
